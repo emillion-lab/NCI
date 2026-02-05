@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NCI‑вдъхновен чеклист за новини (многоезичен)</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#22d3ee; --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
+  }
+  body{margin:0;background:linear-gradient(160deg,#0b1023,#111827);color:var(--text);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans",Arial;}
+  .container{max-width:1100px;margin:2rem auto;padding:1rem;}
+  header{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  h1{font-size:1.6rem;margin:.5rem 0;}
+  .card{background:rgba(17,24,39,.8);border:1px solid #1f2937;border-radius:12px;padding:1rem;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+  .row{display:grid;grid-template-columns:1fr;gap:1rem}
+  .controls{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+  select,button{background:#0b1224;color:var(--text);border:1px solid #1f2a44;border-radius:8px;padding:.6rem .8rem}
+  button:hover{border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+  details{border:1px dashed #334155;border-radius:10px;padding:.6rem}
+  .q{display:grid;gap:.35rem;padding:.75rem 1rem;border-radius:10px;background:#0c1326;border:1px solid #1f2a44}
+  .q h3{margin:0;font-size:1rem}
+  .scale{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  .scale input[type="range"]{width:260px}
+  .badge{display:inline-block;padding:.1rem .5rem;border-radius:999px;background:#12233f;color:#cbd5e1;border:1px solid #22355a;font-size:.8rem}
+  .result{display:grid;gap:.5rem;padding:1rem;border-radius:12px;background:#0a1222;border:1px solid #1f2a44}
+  .score{font-size:2.2rem;font-weight:700}
+  .score.good{color:var(--good)} .score.warn{color:var(--warn)} .score.bad{color:var(--bad)}
+  footer{color:var(--muted);font-size:.9rem;margin:1rem 0}
+  a{color:#7dd3fc}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1 id="appTitle">Проверка на новина: 20 сигнала за манипулация</h1>
+    <div class="controls">
+      <label for="lang" id="langLabel">Език:</label>
+      <select id="lang" aria-label="Language selector">
+        <option value="bg">Български</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="de">Deutsch</option>
+        <option value="ru">Русский</option>
+      </select>
+      <button id="resetBtn">Нулирай</button>
+      <button id="calcBtn">Изчисли</button>
+    </div>
+  </header>
+
+  <section class="card" style="margin:1rem 0">
+    <p id="intro">
+      Отметни по скала <strong>0–5</strong> доколко всеки сигнал присъства в разглежданата новина
+      (0 = липсва; 5 = силно изразен). След това натисни <em>Изчисли</em>.
+    </p>
+    <details>
+      <summary id="methodSummary">За методологията</summary>
+      <div id="methodText">
+        Този инструмент е отворена, образователна адаптация, вдъхновена от 20‑точковата система
+        <em>Narrative Credibility Index (NCI)</em>, представена в The Why Files. Прагова интерпретация:
+        &gt;70 → силни белези на психологическа операция; &lt;40 → вероятно легитимно; 40–70 → смесено съдържание
+        с потенциален дневен ред. Добавени са и проверки от ръководствата на ЕС/IFLA (източници, автори, обратна
+        проверка на изображения, контекст). Инструментът оценява <em>сигнали</em>, не „истината“.</div>
+    </details>
+  </section>
+
+  <section id="questions" class="row"></section>
+
+  <section class="card result" aria-live="polite" style="margin-top:1rem">
+    <div><span class="badge" id="scoreLabel">Оценка</span></div>
+    <div id="score" class="score">0/100</div>
+    <div id="interp"></div>
+    <div id="advice"></div>
+  </section>
+
+  <footer>
+    <p id="sources">
+      Източници/вдъхновение: The Why Files – епизодът за psyops и NCI (транскрипт/описание); Компас за проверка
+      на факти (ЕП/IFLA); „Стратегии за манипулация“ (Чомски).
+    </p>
+    <p>
+      © 2026 • MIT‑лиценз (примерен код). Няма проследяване; всичко се изчислява локално в браузъра.
+    </p>
+  </footer>
+</div>
+
+<script>
+const i18n = {
+  bg: {
+    title: "Проверка на новина: 20 сигнала за манипулация",
+    langLabel: "Език:",
+    intro: "Отметни по скала 0–5 доколко всеки сигнал присъства в разглежданата новина (0 = липсва; 5 = силно изразен). След това натисни „Изчисли“.",
+    methodSummary: "За методологията",
+    methodText: "Този инструмент е отворена, образователна адаптация, вдъхновена от 20‑точковата система Narrative Credibility Index (NCI), представена в The Why Files. Прагова интерпретация: >70 → силни белези на психологическа операция; <40 → вероятно легитимно; 40–70 → смесено съдържание с потенциален дневен ред. Добавени са и проверки от ръководствата на ЕС/IFLA (източници, автори, обратна проверка на изображения, контекст). Инструментът оценява сигнали, не „истината“.",
+    reset: "Нулирай",
+    calc: "Изчисли",
+    scoreLabel: "Оценка",
+    interp: {
+      legit: "Нисък резултат: вероятно легитимно съдържание.",
+      mixed: "Смесени сигнали: възможна частична истина с дневен ред. Проверявай допълнително.",
+      psyop: "Висок резултат: силни белези на манипулация/психологическа операция."
+    },
+    advice: {
+      generic: "Следващи стъпки: провери първични източници; търси независими потвърждения; направи обратна проверка на изображения/видеа; следи за корекции/актуализации.",
+    },
+    scale: ["0: няма", "1: слаб", "2: лек", "3: умерен", "4: силен", "5: много силен"],
+    questions: [
+      "Съвпадение във времето с политическа цел или ключово събитие",
+      "Силна емоционална манипулация (страх/гняв/отвращение)",
+      "Еднакви послания в много медии / идентични формулировки",
+      "Липсват проверими първични източници",
+      "Натиск чрез авторитет („каза го министър/експерт“ вместо доказателства)",
+      "Подбор на данни (cherry‑picking) и премълчаване на опровергаващи факти",
+      "Потискане на различно мнение / етикет „конспирация“",
+      "Финансов интерес / конфликт на интереси",
+      "Фалшива „гражданска“ подкрепа (астроторфинг), ботове",
+      "Племенно рамкиране „ние срещу тях“",
+      "Изкуствена спешност („действай сега“, крайни срокове)",
+      "Преместване на вратата / смяна на дефиниции",
+      "Атакуване на човека (ad hominem) или „сламен човек“ вместо аргументи",
+      "Манипулирани или подвеждащи изображения/видеа (извън контекст)",
+      "Алгоритмично усилване (внезапни пикове, бот‑модели)",
+      "Зависимост от един източник (анонимен/непотвърден)",
+      "Непроверимост / нефалсифицируеми твърдения",
+      "Липса на последващи корекции при нови факти",
+      "Водещи/риторични въпроси вместо доказателства",
+      "Историята доминира над данните (емоционален разказ, малко числа)"
+    ]
+  },
+  en: {
+    title: "News Credibility Check: 20 Manipulation Signals",
+    langLabel: "Language:",
+    intro: "Rate each signal from 0–5 (0 = absent; 5 = very strong) and click Calculate.",
+    methodSummary: "About the method",
+    methodText: "This tool is an open, educational adaptation inspired by the 20‑point Narrative Credibility Index (NCI) presented on The Why Files. Thresholds: >70 → strong signs of a psyop; <40 → likely legitimate; 40–70 → mixed truth with an agenda. It also integrates EU/IFLA fact‑checking steps (sources/authors, reverse image search, context). It scores signals—not objective truth.",
+    reset: "Reset",
+    calc: "Calculate",
+    scoreLabel: "Score",
+    interp: {
+      legit: "Low score: likely legitimate content.",
+      mixed: "Mixed signals: possibly partial truth with an agenda. Verify further.",
+      psyop: "High score: strong signs of manipulation/psyop."
+    },
+    advice: {
+      generic: "Next steps: check primary sources; seek independent confirmations; do reverse image/video searches; look for corrections/updates."
+    },
+    scale: ["0: none","1: weak","2: light","3: moderate","4: strong","5: very strong"],
+    questions: [
+      "Timing aligns with a policy push or key event",
+      "Strong emotional manipulation (fear/anger/disgust)",
+      "Uniform messaging across many outlets / identical wording",
+      "Missing verifiable primary sources",
+      "Authority pressure (“a minister/expert said so” instead of evidence)",
+      "Cherry‑picked data and omission of counter‑evidence",
+      "Suppression of dissent / labeling as “conspiracy”",
+      "Financial incentive / conflict of interest",
+      "Astroturfing (fake grassroots), bots",
+      "Tribal framing (“us vs. them”)",
+      "Artificial urgency (“act now”, deadlines)",
+      "Moving the goalposts / shifting definitions",
+      "Ad hominem or straw‑man instead of arguments",
+      "Manipulated or out‑of‑context images/videos",
+      "Algorithmic amplification (sudden spikes, bot patterns)",
+      "Single‑source dependency (anonymous/unverified)",
+      "Non‑falsifiable / untestable claims",
+      "No follow‑up corrections when facts change",
+      "Leading/rhetorical questions instead of evidence",
+      "Story first, data later (emotional narrative overwhelms facts)"
+    ]
+  },
+  es: {
+    title: "Verificación de noticias: 20 señales de manipulación",
+    langLabel: "Idioma:",
+    intro: "Valora cada señal de 0–5 (0 = ausente; 5 = muy fuerte) y pulsa Calcular.",
+    methodSummary: "Sobre el método",
+    methodText: "Herramienta educativa inspirada en el índice de credibilidad narrativa (NCI) de 20 puntos presentado en The Why Files. Umbrales: >70 → fuertes indicios de psyop; <40 → probablemente legítimo; 40–70 → verdad parcial con agenda. Integra pasos de verificación de la UE/IFLA (fuentes/autores, búsqueda inversa de imágenes, contexto). Puntúa señales, no la “verdad objetiva”.",
+    reset: "Reiniciar",
+    calc: "Calcular",
+    scoreLabel: "Puntuación",
+    interp: {
+      legit: "Puntuación baja: probablemente contenido legítimo.",
+      mixed: "Señales mixtas: posible verdad parcial con agenda. Verifica más.",
+      psyop: "Puntuación alta: fuertes indicios de manipulación/psyop."
+    },
+    advice: { generic: "Próximos pasos: revisa fuentes primarias; busca confirmaciones independientes; usa búsqueda inversa de imágenes/videos; busca correcciones/actualizaciones." },
+    scale: ["0: ninguna","1: débil","2: leve","3: moderada","4: fuerte","5: muy fuerte"],
+    questions: [
+      "Sincronización con un objetivo político o evento clave",
+      "Manipulación emocional intensa (miedo/ira/asco)",
+      "Mensajes uniformes en muchos medios / redacción idéntica",
+      "Faltan fuentes primarias verificables",
+      "Presión de autoridad (“lo dijo un ministro/experto” en lugar de pruebas)",
+      "Selección sesgada de datos (cherry‑picking), omisión de evidencia contraria",
+      "Supresión de la disidencia / etiqueta de “conspiración”",
+      "Incentivo financiero / conflicto de intereses",
+      "Astroturfing (apoyo falso), bots",
+      "Marco tribal (“nosotros vs. ellos”)",
+      "Urgencia artificial (“actúa ahora”, plazos)",
+      "Cambio de criterios / redefiniciones",
+      "Ataque ad hominem u hombre de paja",
+      "Imágenes/videos manipulados o fuera de contexto",
+      "Amplificación algorítmica (picos repentinos, patrones de bots)",
+      "Dependencia de una sola fuente (anónima/no verificada)",
+      "Afirmaciones no falsables / imposibles de comprobar",
+      "Sin correcciones/actualizaciones cuando cambian los hechos",
+      "Preguntas capciosas/retóricas en lugar de pruebas",
+      "Narrativa emocional por encima de los datos"
+    ]
+  },
+  de: {
+    title: "Nachrichten‑Check: 20 Manipulationssignale",
+    langLabel: "Sprache:",
+    intro: "Bewerte jedes Signal von 0–5 (0 = fehlt; 5 = sehr stark) und klicke Berechnen.",
+    methodSummary: "Zur Methode",
+    methodText: "Bildungs‑Tool, inspiriert vom 20‑Punkte‑Narrative Credibility Index (NCI) aus The Why Files. Schwellen: >70 → starke Psyop‑Anzeichen; <40 → vermutlich legitim; 40–70 → gemischte Wahrheit mit Agenda. Integriert EU/IFLA‑Faktenchecks (Quellen/Autoren, Rückwärtsbildsuche, Kontext). Bewertet Signale, nicht die „Wahrheit“.",
+    reset: "Zurücksetzen",
+    calc: "Berechnen",
+    scoreLabel: "Wert",
+    interp: {
+      legit: "Niedriger Wert: vermutlich legitime Inhalte.",
+      mixed: "Gemischte Signale: teils wahr mit Agenda. Weiter prüfen.",
+      psyop: "Hoher Wert: starke Anzeichen für Manipulation/Psyop."
+    },
+    advice: { generic: "Nächste Schritte: Primärquellen prüfen; unabhängige Bestätigungen suchen; Rückwärtsbild-/Videosuche; auf Korrekturen/Updates achten." },
+    scale: ["0: kein","1: schwach","2: leicht","3: moderat","4: stark","5: sehr stark"],
+    questions: [
+      "Timing passt zu politischem Ziel/Ereignis",
+      "Starke emotionale Manipulation (Angst/Wut/Ekel)",
+      "Einheitliche Botschaften in vielen Medien / identische Formulierungen",
+      "Fehlende überprüfbare Primärquellen",
+      "Autoritätsdruck („Minister/Experte sagt es“ statt Belege)",
+      "Cherry‑Picking und Auslassung gegenteiliger Evidenz",
+      "Unterdrückung abweichender Meinungen / „Verschwörung“-Label",
+      "Finanzieller Anreiz / Interessenkonflikt",
+      "Astroturfing (künstliche Graswurzel), Bots",
+      "Stammesrahmung („wir gegen sie“)",
+      "Künstliche Dringlichkeit („jetzt handeln“, Fristen)",
+      "Verschiebung der Torpfosten / wechselnde Definitionen",
+      "Ad‑hominem/Strohmann statt Argumente",
+      "Manipulierte/aus dem Kontext gerissene Bilder/Videos",
+      "Algorithmische Verstärkung (plötzliche Peaks, Bot‑Muster)",
+      "Abhängigkeit von einer einzigen (anonymen/nicht verifizierten) Quelle",
+      "Nicht falsifizierbare Aussagen",
+      "Keine Korrekturen/Updates bei neuen Fakten",
+      "Suggestivfragen/Rhetorik statt Beweise",
+      "Story dominiert Daten (emotionaler Narrativ, wenige Zahlen)"
+    ]
+  },
+  ru: {
+    title: "Проверка новости: 20 сигналов манипуляции",
+    langLabel: "Язык:",
+    intro: "Оцените каждый сигнал по шкале 0–5 (0 = отсутствует; 5 = очень сильный) и нажмите Рассчитать.",
+    methodSummary: "О методе",
+    methodText: "Образовательный инструмент, вдохновлён 20‑пунктовым Narrative Credibility Index (NCI) из The Why Files. Пороги: >70 → сильные признаки psyop; <40 → вероятно легитимно; 40–70 → частичная правда с повесткой. Интегрированы шаги факт‑чекинга ЕС/IFLA (источники/авторы, обратный поиск изображений, контекст). Оцениваются сигналы, а не «истина».",
+    reset: "Сброс",
+    calc: "Рассчитать",
+    scoreLabel: "Счёт",
+    interp: {
+      legit: "Низкий счёт: вероятно легитимный материал.",
+      mixed: "Смешанные сигналы: возможна частичная правда с повесткой. Проверяйте далее.",
+      psyop: "Высокий счёт: сильные признаки манипуляции/psyop."
+    },
+    advice: { generic: "Дальше: проверьте первичные источники; найдите независимые подтверждения; сделайте обратный поиск изображений/видео; ищите исправления/обновления." },
+    scale: ["0: нет","1: слабый","2: лёгкий","3: умеренный","4: сильный","5: очень сильный"],
+    questions: [
+      "Совпадение по времени с политической целью/событием",
+      "Сильная эмоциональная манипуляция (страх/гнев/отвращение)",
+      "Единая повестка во многих СМИ / идентичные формулировки",
+      "Отсутствуют проверяемые первичные источники",
+      "Давление авторитетом («так сказал министр/эксперт») вместо доказательств",
+      "Выборочные данные (cherry‑picking), умолчание опровержений",
+      "Подавление несогласных / ярлык «конспирология»",
+      "Финансовая выгода / конфликт интересов",
+      "Астротёрфинг (ложная «народная» поддержка), боты",
+      "Трибализм («мы против них»)",
+      "Искусственная срочность («действуй сейчас», дедлайны)",
+      "Смена критериев/определений",
+      "Ad hominem/«соломенное чучело» вместо аргументов",
+      "Манипулированные или вырванные из контекста изображения/видео",
+      "Алгоритмическое усиление (внезапные всплески, бото‑паттерны)",
+      "Зависимость от одного источника (анонимного/непроверенного)",
+      "Нефальсифицируемые/непроверяемые утверждения",
+      "Отсутствие исправлений/обновлений при новых фактах",
+      "Наводящие/риторические вопросы вместо доказательств",
+      "Нарратив доминирует над данными (эмоции вместо фактов)"
+    ]
+  }
+};
+
+const els = {
+  title: document.getElementById('appTitle'),
+  langLabel: document.getElementById('langLabel'),
+  lang: document.getElementById('lang'),
+  intro: document.getElementById('intro'),
+  methodSummary: document.getElementById('methodSummary'),
+  methodText: document.getElementById('methodText'),
+  reset: document.getElementById('resetBtn'),
+  calc: document.getElementById('calcBtn'),
+  qWrap: document.getElementById('questions'),
+  scoreLabel: document.getElementById('scoreLabel'),
+  score: document.getElementById('score'),
+  interp: document.getElementById('interp'),
+  advice: document.getElementById('advice'),
+  sources: document.getElementById('sources')
+};
+
+let state = { lang: 'bg', values: Array(20).fill(0) };
+
+function renderUI(){
+  const t = i18n[state.lang];
+  document.documentElement.lang = state.lang;
+  els.title.textContent = t.title;
+  els.langLabel.textContent = t.langLabel;
+  els.intro.textContent = t.intro;
+  els.methodSummary.textContent = t.methodSummary;
+  els.methodText.textContent = t.methodText;
+  els.reset.textContent = t.reset;
+  els.calc.textContent = t.calc;
+  els.scoreLabel.textContent = t.scoreLabel;
+
+  // Questions
+  els.qWrap.innerHTML = '';
+  t.questions.forEach((q, idx) => {
+    const v = state.values[idx] ?? 0;
+    const div = document.createElement('div'); div.className = 'q';
+    div.innerHTML = `
+      <h3>${idx+1}. ${q}</h3>
+      <div class="scale">
+        <span class="badge">${t.scale[0]}</span>
+        <input type="range" min="0" max="5" step="1" value="${v}" data-idx="${idx}" aria-label="${q}">
+        <span class="badge">${t.scale[5]}</span>
+        <span class="badge" id="val-${idx}">${v}</span>
+      </div>
+    `;
+    els.qWrap.appendChild(div);
+  });
+
+  // Sources line (static but localized preface)
+  if (state.lang==='bg'){
+    els.sources.innerHTML = `Източници/вдъхновение: The Why Files – епизодът за psyops и NCI; Компас за проверка на факти (ЕП/IFLA); Чомски – стратегии за манипулация.`;
+  } else if (state.lang==='en'){
+    els.sources.innerHTML = `Sources/inspiration: The Why Files episode on psyops & NCI; EU/IFLA fact‑checking compass; Chomsky’s media manipulation strategies.`;
+  } else if (state.lang==='es'){
+    els.sources.innerHTML = `Fuentes/inspiración: episodio de The Why Files (psyops y NCI); brújula de verificación UE/IFLA; estrategias de Chomsky.`;
+  } else if (state.lang==='de'){
+    els.sources.innerHTML = `Quellen/Inspiration: The Why Files (Psyops & NCI); EU/IFLA‑Faktencheck‑Kompass; Chomsky‑Strategien.`;
+  } else {
+    els.sources.innerHTML = `Источники/вдохновение: The Why Files (psyops и NCI); компас факт‑чекинга ЕС/IFLA; стратегии Чомского.`;
+  }
+
+  // Bind inputs
+  els.qWrap.querySelectorAll('input[type="range"]').forEach(r=>{
+    r.addEventListener('input', e => {
+      const i = Number(e.target.dataset.idx);
+      const val = Number(e.target.value);
+      state.values[i] = val;
+      const badge = document.getElementById(`val-${i}`);
+      if (badge) badge.textContent = val;
+    });
+  });
+}
+
+function calcScore(){
+  const sum = state.values.reduce((a,b)=>a+b,0);
+  // Normalize to 100 (20 * max 5 = 100)
+  const score = Math.round((sum/100)*100); // equals sum
+  const t = i18n[state.lang];
+  els.score.textContent = `${score}/100`;
+  let cls = 'good', text = t.interp.legit;
+  if (score >= 70){ cls = 'bad'; text = t.interp.psyop; }
+  else if (score >= 40){ cls = 'warn'; text = t.interp.mixed; }
+  els.score.className = `score ${cls}`;
+  els.interp.textContent = text;
+  els.advice.textContent = t.advice.generic;
+}
+
+els.lang.addEventListener('change', e => {
+  state.lang = e.target.value; renderUI(); calcScore();
+});
+els.reset.addEventListener('click', () => {
+  state.values = Array(20).fill(0); renderUI(); calcScore();
+});
+els.calc.addEventListener('click', calcScore);
+
+// Initial render
+renderUI(); calcScore();
+</script>
+</body>
+</html>
