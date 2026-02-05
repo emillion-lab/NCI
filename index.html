@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>NCI‑чеклист • CIA CRT v8 (Enhanced Warning System)</title>
-<meta name="description" content="20-сигнален чеклист с цветно-кодирани предупреждения, ретро CRT дизайн и PNG/PDF експорт." />
+<title>NCI‑чеклист • CIA CRT v9 (Multilingual)</title>
+<meta name="description" content="20-signal checklist with color-coded warnings, retro CRT design, and PNG/PDF export in 10 European languages." />
 <style>
 :root{ --bg:#0b1023; --bg2:#0f172a; --card:#0c1326; --border:#1f2a44; --muted:#94a3b8; --text:#e5e7eb; --head:#e2e8f0; --accent:#22d3ee; --accent-2:#a78bfa; --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --btnH:44px; --radius:14px; --shadow:0 8px 32px rgba(0,0,0,.35); --font: 16px/1.52 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans",Arial; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
 body.theme-cia{ --bg:#000; --bg2:#000; --card:#00160e; --border:#0d3a2d; --muted:#78e0b8; --text:#caffea; --head:#b4ffd9; --accent:#22ff88; --accent-2:#0fd38a; --good:#22ff88; --warn:#ffd166; --bad:#ff6b6b; --shadow:none; }
@@ -270,8 +270,16 @@ body.theme-cia .actionbar .primary{background:#0a7a55}
     <div class="controls" role="group" aria-label="Основни настройки">
       <label for="lang" id="langLabel">Език:</label>
       <select id="lang" aria-label="Избор на език">
-        <option value="bg">Български</option>
-        <option value="en">English</option>
+        <option value="bg">🇧🇬 Български</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="pl">🇵🇱 Polski</option>
+        <option value="ro">🇷🇴 Română</option>
+        <option value="cs">🇨🇿 Čeština</option>
+        <option value="hu">🇭🇺 Magyar</option>
       </select>
       <button class="cia-toggle" id="ciaBtn" title="CIA Terminal">CIA Terminal</button>
       <button class="ghost" id="resetBtn">Нулирай</button>
@@ -280,17 +288,17 @@ body.theme-cia .actionbar .primary{background:#0a7a55}
   </header>
 
   <details style="margin-top:1.2rem">
-    <summary style="cursor:pointer;font-weight:600;color:var(--accent)">📋 Методология</summary>
-    <p style="margin-top:.6rem;color:var(--muted);line-height:1.6">Този инструмент оценява наличието на 20 известни сигнала за информационна манипулация, използвани в психологически операции. Всеки сигнал се оценява от 0 (отсъства) до 5 (много силно присъства). Крайният резултат показва общата вероятност за манипулация.</p>
+    <summary id="methodSummary" style="cursor:pointer;font-weight:600;color:var(--accent)">📋 Методология</summary>
+    <p id="methodText" style="margin-top:.6rem;color:var(--muted);line-height:1.6">Този инструмент оценява наличието на 20 известни сигнала за информационна манипулация, използвани в психологически операции. Всеки сигнал се оценява от 0 (отсъства) до 5 (много силно присъства). Крайният резултат показва общата вероятност за манипулация.</p>
   </details>
 
   <section class="card" style="margin-top:1.5rem">
-    <h2 style="margin:0 0 1rem 0; font-size:1.3rem; color:var(--head)">Оценка на сигналите</h2>
+    <h2 id="signalsTitle" style="margin:0 0 1rem 0; font-size:1.3rem; color:var(--head)">Оценка на сигналите</h2>
     <div id="questions" style="display:grid;gap:.8rem"></div>
   </section>
 
   <section class="card" style="margin-top:1.5rem">
-    <h2 style="margin:0 0 1rem 0; font-size:1.3rem; color:var(--head)">Резултат</h2>
+    <h2 id="resultTitle" style="margin:0 0 1rem 0; font-size:1.3rem; color:var(--head)">Резултат</h2>
     <div class="result">
       <div class="score good" id="score">0/100</div>
       <p id="interp" style="margin:.2rem 0; font-weight:500"></p>
@@ -304,8 +312,16 @@ body.theme-cia .actionbar .primary{background:#0a7a55}
     <div class="ab-left">
       <label for="abLang" style="font-size:.85rem">Език:</label>
       <select id="abLang" aria-label="Избор на език">
-        <option value="bg">BG</option>
-        <option value="en">EN</option>
+        <option value="bg">🇧🇬 BG</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="de">🇩🇪 DE</option>
+        <option value="fr">🇫🇷 FR</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="it">🇮🇹 IT</option>
+        <option value="pl">🇵🇱 PL</option>
+        <option value="ro">🇷🇴 RO</option>
+        <option value="cs">🇨🇿 CS</option>
+        <option value="hu">🇭🇺 HU</option>
       </select>
       <button class="cia-toggle" id="abCiaBtn" title="Превключи CIA режим">CRT</button>
     </div>
@@ -338,61 +354,246 @@ body.theme-cia .actionbar .primary{background:#0a7a55}
 </div>
 
 <script>
-/* ==== Questions ==== */
-const QUESTIONS_BG = [
-  "Времето съвпада с политически натиск или ключово събитие",
-  "Силна емоционална манипулация (страх/гняв/отвращение)",
-  "Еднаква формулировка в различни медии",
-  "Липса на проверими първични източници",
-  "Натиск от авторитет вместо доказателства",
-  "Селективни данни; пропускане на противоположни",
-  "Потискане на дисидентски мнения / етикетиране 'конспирация'",
-  "Финансова заинтересованост / конфликт на интереси",
-  "Изкуствена 'масовост' (astroturfing), ботове",
-  "Племенна рамка ('ние срещу тях')",
-  "Изкуствена спешност ('действайте сега')",
-  "Преместване на гол постовете / промяна на дефинициите",
-  "Атаки срещу личността / изкривяване на позицията",
-  "Манипулирани/извън контекст изображения/видеа",
-  "Алгоритмично усилване (внезапни пикове, бот‑модели)",
-  "Зависимост от един (анонимен/непотвърден) източник",
-  "Непроверимост / нефалсифицируеми твърдения",
-  "Без последващи корекции/актуализации",
-  "Водещи/риторични въпроси вместо доказателства",
-  "Историята доминира над данните (емоция > факти)"
-];
+/* ==== Questions in all languages ==== */
+const QUESTIONS = {
+  bg: [
+    "Времето съвпада с политически натиск или ключово събитие",
+    "Силна емоционална манипулация (страх/гняв/отвращение)",
+    "Еднаква формулировка в различни медии",
+    "Липса на проверими първични източници",
+    "Натиск от авторитет вместо доказателства",
+    "Селективни данни; пропускане на противоположни",
+    "Потискане на дисидентски мнения / етикетиране 'конспирация'",
+    "Финансова заинтересованост / конфликт на интереси",
+    "Изкуствена 'масовост' (astroturfing), ботове",
+    "Племенна рамка ('ние срещу тях')",
+    "Изкуствена спешност ('действайте сега')",
+    "Преместване на гол постовете / промяна на дефинициите",
+    "Атаки срещу личността / изкривяване на позицията",
+    "Манипулирани/извън контекст изображения/видеа",
+    "Алгоритмично усилване (внезапни пикове, бот‑модели)",
+    "Зависимост от един (анонимен/непотвърден) източник",
+    "Непроверимост / нефалсифицируеми твърдения",
+    "Без последващи корекции/актуализации",
+    "Водещи/риторични въпроси вместо доказателства",
+    "Историята доминира над данните (емоция > факти)"
+  ],
+  en: [
+    "Timing aligns with policy push or key event",
+    "Strong emotional manipulation (fear/anger/disgust)",
+    "Uniform messaging across outlets",
+    "Missing verifiable primary sources",
+    "Authority pressure instead of evidence",
+    "Cherry-picked data; omission of counter-evidence",
+    "Suppression of dissent / 'conspiracy' labeling",
+    "Financial incentive / conflict of interest",
+    "Astroturfing (fake grassroots), bots",
+    "Tribal framing ('us vs them')",
+    "Artificial urgency ('act now')",
+    "Moving goalposts / shifting definitions",
+    "Ad hominem / straw-man attacks",
+    "Manipulated or out-of-context images/videos",
+    "Algorithmic amplification (sudden spikes, bots)",
+    "Single-source dependency (anonymous/unverified)",
+    "Non-falsifiable / untestable claims",
+    "No corrections when facts change",
+    "Leading/rhetorical questions instead of evidence",
+    "Story first, data later (emotion > facts)"
+  ],
+  de: [
+    "Zeitpunkt stimmt mit politischem Druck überein",
+    "Starke emotionale Manipulation (Angst/Wut/Ekel)",
+    "Einheitliche Botschaft in verschiedenen Medien",
+    "Fehlende überprüfbare Primärquellen",
+    "Autoritätsdruck statt Beweise",
+    "Selektive Daten; Weglassen von Gegenbeweisen",
+    "Unterdrückung abweichender Meinungen",
+    "Finanzieller Anreiz / Interessenkonflikt",
+    "Astroturfing (gefälschte Graswurzeln), Bots",
+    "Stammesdenken ('wir gegen sie')",
+    "Künstliche Dringlichkeit ('jetzt handeln')",
+    "Verschieben der Torpfosten",
+    "Ad hominem / Strohmann-Angriffe",
+    "Manipulierte Bilder/Videos",
+    "Algorithmische Verstärkung",
+    "Abhängigkeit von einzelner Quelle",
+    "Nicht falsifizierbare Behauptungen",
+    "Keine Korrekturen bei Faktenänderung",
+    "Suggestivfragen statt Beweise",
+    "Geschichte zuerst, Daten später"
+  ],
+  fr: [
+    "Le moment coïncide avec une pression politique",
+    "Forte manipulation émotionnelle (peur/colère)",
+    "Message uniforme dans différents médias",
+    "Absence de sources primaires vérifiables",
+    "Pression d'autorité au lieu de preuves",
+    "Données sélectives; omission de contre-preuves",
+    "Suppression de la dissidence",
+    "Incitation financière / conflit d'intérêts",
+    "Astroturfing (faux mouvement populaire)",
+    "Cadrage tribal ('nous contre eux')",
+    "Urgence artificielle ('agir maintenant')",
+    "Déplacement des poteaux de but",
+    "Attaques ad hominem / homme de paille",
+    "Images/vidéos manipulées",
+    "Amplification algorithmique",
+    "Dépendance d'une source unique",
+    "Affirmations non falsifiables",
+    "Pas de corrections",
+    "Questions suggestives au lieu de preuves",
+    "Histoire d'abord, données après"
+  ],
+  es: [
+    "El momento coincide con presión política",
+    "Fuerte manipulación emocional (miedo/ira)",
+    "Mensaje uniforme en diferentes medios",
+    "Falta de fuentes primarias verificables",
+    "Presión de autoridad en lugar de evidencia",
+    "Datos selectivos; omisión de contra-evidencia",
+    "Supresión de disidencia",
+    "Incentivo financiero / conflicto de intereses",
+    "Astroturfing (movimiento popular falso)",
+    "Marco tribal ('nosotros contra ellos')",
+    "Urgencia artificial ('actuar ahora')",
+    "Mover los postes / cambiar definiciones",
+    "Ataques ad hominem / hombre de paja",
+    "Imágenes/videos manipulados",
+    "Amplificación algorítmica",
+    "Dependencia de fuente única",
+    "Afirmaciones no falsificables",
+    "Sin correcciones",
+    "Preguntas retóricas en lugar de evidencia",
+    "Historia primero, datos después"
+  ],
+  it: [
+    "Il momento coincide con pressione politica",
+    "Forte manipolazione emotiva (paura/rabbia)",
+    "Messaggio uniforme in diversi media",
+    "Mancanza di fonti primarie verificabili",
+    "Pressione dell'autorità invece di prove",
+    "Dati selettivi; omissione di contro-prove",
+    "Soppressione del dissenso",
+    "Incentivo finanziario / conflitto di interessi",
+    "Astroturfing (movimento popolare falso)",
+    "Inquadramento tribale ('noi contro loro')",
+    "Urgenza artificiale ('agire ora')",
+    "Spostamento dei pali",
+    "Attacchi ad hominem / uomo di paglia",
+    "Immagini/video manipolati",
+    "Amplificazione algoritmica",
+    "Dipendenza da fonte unica",
+    "Affermazioni non falsificabili",
+    "Nessuna correzione",
+    "Domande retoriche invece di prove",
+    "Storia prima, dati dopo"
+  ],
+  pl: [
+    "Czas pokrywa się z naciskiem politycznym",
+    "Silna manipulacja emocjonalna (strach/gniew)",
+    "Jednolity przekaz w różnych mediach",
+    "Brak weryfikowalnych źródeł pierwotnych",
+    "Presja autorytetu zamiast dowodów",
+    "Selektywne dane; pomijanie przeciwdowodów",
+    "Tłumienie sprzeciwu",
+    "Zachęta finansowa / konflikt interesów",
+    "Astroturfing (fałszywy ruch oddolny)",
+    "Ramowanie plemienne ('my przeciwko nim')",
+    "Sztuczna pilność ('działaj teraz')",
+    "Przesuwanie bramek",
+    "Ataki ad hominem / chochół",
+    "Zmanipulowane obrazy/filmy",
+    "Wzmocnienie algorytmiczne",
+    "Zależność od pojedynczego źródła",
+    "Twierdzenia niemożliwe do sfalsyfikowania",
+    "Brak poprawek",
+    "Pytania retoryczne zamiast dowodów",
+    "Historia najpierw, dane później"
+  ],
+  ro: [
+    "Momentul coincide cu presiune politică",
+    "Manipulare emoțională puternică (frică/furie)",
+    "Mesaj uniform în diferite media",
+    "Lipsa surselor primare verificabile",
+    "Presiune de autoritate în loc de dovezi",
+    "Date selective; omiterea contra-dovezilor",
+    "Suprimarea dizidenței",
+    "Stimulent financiar / conflict de interese",
+    "Astroturfing (mișcare populară falsă)",
+    "Încadrare tribală ('noi contra lor')",
+    "Urgență artificială ('acționează acum')",
+    "Mutarea țintelor",
+    "Atacuri ad hominem / om de paie",
+    "Imagini/videoclipuri manipulate",
+    "Amplificare algoritmică",
+    "Dependență de o singură sursă",
+    "Afirmații nefalsificabile",
+    "Fără corecții",
+    "Întrebări retorice în loc de dovezi",
+    "Povestea întâi, datele după"
+  ],
+  cs: [
+    "Načasování se shoduje s politickým tlakem",
+    "Silná emocionální manipulace (strach/hněv)",
+    "Jednotné sdělení v různých médiích",
+    "Chybějící ověřitelné primární zdroje",
+    "Tlak autority místo důkazů",
+    "Selektivní data; vynechání protidůkazů",
+    "Potlačování nesouhlasu",
+    "Finanční pobídka / konflikt zájmů",
+    "Astroturfing (falešné masové hnutí)",
+    "Kmenové rámování ('my proti nim')",
+    "Umělá naléhavost ('jednat teď')",
+    "Posouvání branky",
+    "Útoky ad hominem / strašák",
+    "Manipulované obrázky/videa",
+    "Algoritmické zesílení",
+    "Závislost na jednom zdroji",
+    "Nevyvratitelná tvrzení",
+    "Žádné opravy",
+    "Sugestivní otázky místo důkazů",
+    "Příběh napřed, data potom"
+  ],
+  hu: [
+    "Az időzítés egybeesik politikai nyomással",
+    "Erős érzelmi manipuláció (félelem/düh)",
+    "Egységes üzenet különböző médiákban",
+    "Hiányzó ellenőrizhető elsődleges források",
+    "Tekintélyi nyomás bizonyítékok helyett",
+    "Szelektív adatok; ellenbizonyítékok elhagyása",
+    "Ellenvélemények elnyomása",
+    "Pénzügyi ösztönzés / összeférhetetlenség",
+    "Astroturfing (hamis tömegmozgalom)",
+    "Törzsi keretezés ('mi ellenük')",
+    "Mesterséges sürgősség ('cselekedj most')",
+    "Kapufa mozgatása",
+    "Ad hominem / szalmabáb támadások",
+    "Manipulált képek/videók",
+    "Algoritmikus erősítés",
+    "Egyetlen forrástól való függés",
+    "Nem cáfolható állítások",
+    "Nincs javítás",
+    "Vezető kérdések bizonyítékok helyett",
+    "Történet először, adatok később"
+  ]
+};
 
-const QUESTIONS_EN = [
-  "Timing aligns with a policy push or key event",
-  "Strong emotional manipulation (fear/anger/disgust)",
-  "Uniform messaging across outlets / identical wording",
-  "Missing verifiable primary sources",
-  "Authority pressure instead of evidence",
-  "Cherry‑picked data; omission of counter‑evidence",
-  "Suppression of dissent / 'conspiracy' labeling",
-  "Financial incentive / conflict of interest",
-  "Astroturfing (fake grassroots), bots",
-  "Tribal framing ('us vs them')",
-  "Artificial urgency ('act now')",
-  "Moving the goalposts / shifting definitions",
-  "Ad hominem / straw‑man attacks",
-  "Manipulated or out‑of‑context images/videos",
-  "Algorithmic amplification (sudden spikes, bot patterns)",
-  "Single‑source dependency (anonymous/unverified)",
-  "Non‑falsifiable / untestable claims",
-  "No corrections/updates when facts change",
-  "Leading/rhetorical questions instead of evidence",
-  "Story first, data later (emotion > facts)"
-];
-
-/* ==== I18N labels & messages ==== */
+/* ==== I18N translations ==== */
 const I18N = {
   bg:{
+    title:"Проверка на новина: 20 сигнала за манипулация",
+    intro:"Отметни по скала <strong>0–5</strong> доколко всеки сигнал присъства. Натисни <em>Изчисли</em>, после <em>Резултати</em> и свали PNG.",
     results:"Резултати", 
     save:"Свали PNG", 
     savePDF:"Свали PDF",
     ok:"Затвори", 
-    intro:"Отметни по скала 0–5…", 
+    calc:"Изчисли",
+    reset:"Нулирай",
+    langLabel:"Език:",
+    methodology:"📋 Методология",
+    methodText:"Този инструмент оценява наличието на 20 известни сигнала за информационна манипулация, използвани в психологически операции. Всеки сигнал се оценява от 0 (отсъства) до 5 (много силно присъства). Крайният резултат показва общата вероятност за манипулация.",
+    signalsTitle:"Оценка на сигналите",
+    resultTitle:"Резултат",
     status:{
       safe:"НЯМА МАНИПУЛАЦИЯ",
       warn:"УМЕРЕНА ВЕРОЯТНОСТ",
@@ -403,25 +604,251 @@ const I18N = {
       mixed:"Смесени сигнали: Открити са някои характеристики на манипулация. Препоръчва се критичен анализ и кръстосана проверка с независими източници.",
       danger:"Висок резултат: ПРЕДУПРЕЖДЕНИЕ! Установени са множество силни сигнали за информационна манипулация. Тази новина вероятно е част от координирана кампания за влияние."
     }, 
-    advice:"Винаги: проверявайте първични източници, търсете независими потвърждения, правете обратна проверка на изображения."
+    advice:"Винаги: проверявайте първични източници, търсете независими потвърждения, правете обратна проверка на изображения.",
+    badges:{none:"няма", veryStrong:"много силен"}
   },
   en:{
+    title:"News Check: 20 Manipulation Signals",
+    intro:"Rate each signal on a scale of <strong>0–5</strong>. Click <em>Calculate</em>, then <em>Results</em> and download PNG.",
     results:"Results", 
     save:"Download PNG",
     savePDF:"Download PDF", 
     ok:"Close", 
-    intro:"Rate each signal 0–5…",
+    calc:"Calculate",
+    reset:"Reset",
+    langLabel:"Language:",
+    methodology:"📋 Methodology",
+    methodText:"This tool evaluates 20 known information manipulation signals used in psychological operations. Each signal is rated 0 (absent) to 5 (very strong). The final score shows overall manipulation probability.",
+    signalsTitle:"Signal Assessment",
+    resultTitle:"Result",
     status:{
       safe:"NO MANIPULATION",
       warn:"MODERATE PROBABILITY",
       danger:"MANIPULATION DETECTED"
     },
     interp:{
-      safe:"Low score: No significant traces of manipulation detected. The news appears reliable, but always verify primary sources.",
-      mixed:"Mixed signals: Some manipulation characteristics detected. Critical analysis and cross-verification with independent sources recommended.",
-      danger:"High score: WARNING! Multiple strong signals of information manipulation detected. This news is likely part of a coordinated influence campaign."
+      safe:"Low score: No significant manipulation traces detected. News appears reliable, but always verify primary sources.",
+      mixed:"Mixed signals: Some manipulation characteristics detected. Critical analysis and cross-verification recommended.",
+      danger:"High score: WARNING! Multiple strong manipulation signals detected. This news is likely part of a coordinated influence campaign."
     }, 
-    advice:"Always: verify primary sources, seek independent confirmations, and do reverse image/video search."
+    advice:"Always: verify primary sources, seek independent confirmations, do reverse image search.",
+    badges:{none:"none", veryStrong:"very strong"}
+  },
+  de:{
+    title:"Nachrichtenprüfung: 20 Manipulationssignale",
+    intro:"Bewerten Sie jedes Signal auf einer Skala von <strong>0–5</strong>. Klicken Sie auf <em>Berechnen</em>, dann <em>Ergebnisse</em>.",
+    results:"Ergebnisse",
+    save:"PNG herunterladen",
+    savePDF:"PDF herunterladen",
+    ok:"Schließen",
+    calc:"Berechnen",
+    reset:"Zurücksetzen",
+    langLabel:"Sprache:",
+    methodology:"📋 Methodik",
+    methodText:"Dieses Tool bewertet 20 bekannte Informationsmanipulationssignale aus psychologischen Operationen. Jedes Signal wird von 0 (nicht vorhanden) bis 5 (sehr stark) bewertet.",
+    signalsTitle:"Signalbewertung",
+    resultTitle:"Ergebnis",
+    status:{
+      safe:"KEINE MANIPULATION",
+      warn:"MÄSSIGE WAHRSCHEINLICHKEIT",
+      danger:"MANIPULATION FESTGESTELLT"
+    },
+    interp:{
+      safe:"Niedriger Score: Keine signifikanten Manipulationsspuren. Nachricht erscheint zuverlässig.",
+      mixed:"Gemischte Signale: Einige Manipulationsmerkmale erkannt. Kritische Analyse empfohlen.",
+      danger:"Hoher Score: WARNUNG! Mehrere starke Manipulationssignale erkannt."
+    },
+    advice:"Immer: Primärquellen prüfen, unabhängige Bestätigungen suchen.",
+    badges:{none:"keine", veryStrong:"sehr stark"}
+  },
+  fr:{
+    title:"Vérification: 20 signaux de manipulation",
+    intro:"Évaluez chaque signal sur une échelle de <strong>0–5</strong>. Cliquez sur <em>Calculer</em>, puis <em>Résultats</em>.",
+    results:"Résultats",
+    save:"Télécharger PNG",
+    savePDF:"Télécharger PDF",
+    ok:"Fermer",
+    calc:"Calculer",
+    reset:"Réinitialiser",
+    langLabel:"Langue:",
+    methodology:"📋 Méthodologie",
+    methodText:"Cet outil évalue 20 signaux connus de manipulation de l'information utilisés dans les opérations psychologiques. Chaque signal est noté de 0 (absent) à 5 (très fort).",
+    signalsTitle:"Évaluation des signaux",
+    resultTitle:"Résultat",
+    status:{
+      safe:"PAS DE MANIPULATION",
+      warn:"PROBABILITÉ MODÉRÉE",
+      danger:"MANIPULATION DÉTECTÉE"
+    },
+    interp:{
+      safe:"Score faible: Aucune trace significative de manipulation. L'actualité semble fiable.",
+      mixed:"Signaux mixtes: Certaines caractéristiques de manipulation détectées.",
+      danger:"Score élevé: ATTENTION! Plusieurs signaux forts de manipulation détectés."
+    },
+    advice:"Toujours: vérifier les sources primaires, rechercher des confirmations indépendantes.",
+    badges:{none:"aucun", veryStrong:"très fort"}
+  },
+  es:{
+    title:"Verificación: 20 señales de manipulación",
+    intro:"Califica cada señal en una escala de <strong>0–5</strong>. Haz clic en <em>Calcular</em>, luego <em>Resultados</em>.",
+    results:"Resultados",
+    save:"Descargar PNG",
+    savePDF:"Descargar PDF",
+    ok:"Cerrar",
+    calc:"Calcular",
+    reset:"Reiniciar",
+    langLabel:"Idioma:",
+    methodology:"📋 Metodología",
+    methodText:"Esta herramienta evalúa 20 señales conocidas de manipulación de información utilizadas en operaciones psicológicas. Cada señal se califica de 0 (ausente) a 5 (muy fuerte).",
+    signalsTitle:"Evaluación de señales",
+    resultTitle:"Resultado",
+    status:{
+      safe:"SIN MANIPULACIÓN",
+      warn:"PROBABILIDAD MODERADA",
+      danger:"MANIPULACIÓN DETECTADA"
+    },
+    interp:{
+      safe:"Puntuación baja: No se detectaron rastros significativos de manipulación.",
+      mixed:"Señales mixtas: Se detectaron algunas características de manipulación.",
+      danger:"Puntuación alta: ¡ADVERTENCIA! Se detectaron múltiples señales fuertes."
+    },
+    advice:"Siempre: verifica fuentes primarias, busca confirmaciones independientes.",
+    badges:{none:"ninguno", veryStrong:"muy fuerte"}
+  },
+  it:{
+    title:"Verifica: 20 segnali di manipolazione",
+    intro:"Valuta ogni segnale su una scala da <strong>0–5</strong>. Clicca su <em>Calcola</em>, poi <em>Risultati</em>.",
+    results:"Risultati",
+    save:"Scarica PNG",
+    savePDF:"Scarica PDF",
+    ok:"Chiudi",
+    calc:"Calcola",
+    reset:"Ripristina",
+    langLabel:"Lingua:",
+    methodology:"📋 Metodologia",
+    methodText:"Questo strumento valuta 20 segnali noti di manipolazione dell'informazione utilizzati nelle operazioni psicologiche. Ogni segnale è valutato da 0 (assente) a 5 (molto forte).",
+    signalsTitle:"Valutazione dei segnali",
+    resultTitle:"Risultato",
+    status:{
+      safe:"NESSUNA MANIPOLAZIONE",
+      warn:"PROBABILITÀ MODERATA",
+      danger:"MANIPOLAZIONE RILEVATA"
+    },
+    interp:{
+      safe:"Punteggio basso: Nessuna traccia significativa di manipolazione rilevata.",
+      mixed:"Segnali misti: Alcune caratteristiche di manipolazione rilevate.",
+      danger:"Punteggio alto: ATTENZIONE! Rilevati molteplici segnali forti."
+    },
+    advice:"Sempre: verifica fonti primarie, cerca conferme indipendenti.",
+    badges:{none:"nessuno", veryStrong:"molto forte"}
+  },
+  pl:{
+    title:"Sprawdzanie: 20 sygnałów manipulacji",
+    intro:"Oceń każdy sygnał w skali od <strong>0–5</strong>. Kliknij <em>Oblicz</em>, następnie <em>Wyniki</em>.",
+    results:"Wyniki",
+    save:"Pobierz PNG",
+    savePDF:"Pobierz PDF",
+    ok:"Zamknij",
+    calc:"Oblicz",
+    reset:"Resetuj",
+    langLabel:"Język:",
+    methodology:"📋 Metodologia",
+    methodText:"To narzędzie ocenia 20 znanych sygnałów manipulacji informacją używanych w operacjach psychologicznych. Każdy sygnał jest oceniany od 0 (brak) do 5 (bardzo silny).",
+    signalsTitle:"Ocena sygnałów",
+    resultTitle:"Wynik",
+    status:{
+      safe:"BRAK MANIPULACJI",
+      warn:"UMIARKOWANE PRAWDOPODOBIEŃSTWO",
+      danger:"WYKRYTO MANIPULACJĘ"
+    },
+    interp:{
+      safe:"Niski wynik: Nie wykryto znaczących śladów manipulacji.",
+      mixed:"Mieszane sygnały: Wykryto niektóre cechy manipulacji.",
+      danger:"Wysoki wynik: OSTRZEŻENIE! Wykryto wiele silnych sygnałów."
+    },
+    advice:"Zawsze: weryfikuj źródła pierwotne, szukaj niezależnych potwierdzeń.",
+    badges:{none:"brak", veryStrong:"bardzo silny"}
+  },
+  ro:{
+    title:"Verificare: 20 semnale de manipulare",
+    intro:"Evaluează fiecare semnal pe o scară de la <strong>0–5</strong>. Apasă pe <em>Calculează</em>, apoi <em>Rezultate</em>.",
+    results:"Rezultate",
+    save:"Descarcă PNG",
+    savePDF:"Descarcă PDF",
+    ok:"Închide",
+    calc:"Calculează",
+    reset:"Resetează",
+    langLabel:"Limbă:",
+    methodology:"📋 Metodologie",
+    methodText:"Acest instrument evaluează 20 de semnale cunoscute de manipulare a informației folosite în operațiuni psihologice. Fiecare semnal este evaluat de la 0 (absent) la 5 (foarte puternic).",
+    signalsTitle:"Evaluarea semnalelor",
+    resultTitle:"Rezultat",
+    status:{
+      safe:"FĂRĂ MANIPULARE",
+      warn:"PROBABILITATE MODERATĂ",
+      danger:"MANIPULARE DETECTATĂ"
+    },
+    interp:{
+      safe:"Scor scăzut: Nu s-au detectat urme semnificative de manipulare.",
+      mixed:"Semnale mixte: S-au detectat unele caracteristici de manipulare.",
+      danger:"Scor ridicat: AVERTISMENT! S-au detectat multiple semnale puternice."
+    },
+    advice:"Întotdeauna: verifică sursele primare, caută confirmări independente.",
+    badges:{none:"niciunul", veryStrong:"foarte puternic"}
+  },
+  cs:{
+    title:"Kontrola: 20 signálů manipulace",
+    intro:"Ohodnoťte každý signál na škále <strong>0–5</strong>. Klikněte na <em>Vypočítat</em>, poté <em>Výsledky</em>.",
+    results:"Výsledky",
+    save:"Stáhnout PNG",
+    savePDF:"Stáhnout PDF",
+    ok:"Zavřít",
+    calc:"Vypočítat",
+    reset:"Resetovat",
+    langLabel:"Jazyk:",
+    methodology:"📋 Metodologie",
+    methodText:"Tento nástroj hodnotí 20 známých signálů manipulace s informacemi používaných v psychologických operacích. Každý signál je hodnocen od 0 (chybí) do 5 (velmi silný).",
+    signalsTitle:"Hodnocení signálů",
+    resultTitle:"Výsledek",
+    status:{
+      safe:"ŽÁDNÁ MANIPULACE",
+      warn:"MÍRNÁ PRAVDĚPODOBNOST",
+      danger:"MANIPULACE ZJIŠTĚNA"
+    },
+    interp:{
+      safe:"Nízké skóre: Nebyly zjištěny významné stopy manipulace.",
+      mixed:"Smíšené signály: Zjištěny některé charakteristiky manipulace.",
+      danger:"Vysoké skóre: VAROVÁNÍ! Zjištěno několik silných signálů."
+    },
+    advice:"Vždy: ověřujte primární zdroje, hledejte nezávislá potvrzení.",
+    badges:{none:"žádný", veryStrong:"velmi silný"}
+  },
+  hu:{
+    title:"Ellenőrzés: 20 manipulációs jel",
+    intro:"Értékelje minden jelet <strong>0–5</strong> skálán. Kattintson a <em>Számítás</em>, majd az <em>Eredmények</em> gombra.",
+    results:"Eredmények",
+    save:"PNG letöltése",
+    savePDF:"PDF letöltése",
+    ok:"Bezárás",
+    calc:"Számítás",
+    reset:"Visszaállítás",
+    langLabel:"Nyelv:",
+    methodology:"📋 Módszertan",
+    methodText:"Ez az eszköz 20 ismert információmanipulációs jel jelenlétét értékeli. Minden jel 0-tól (hiányzik) 5-ig (nagyon erős) értékelendő.",
+    signalsTitle:"Jelek értékelése",
+    resultTitle:"Eredmény",
+    status:{
+      safe:"NINCS MANIPULÁCIÓ",
+      warn:"MÉRSÉKELT VALÓSZÍNŰSÉG",
+      danger:"MANIPULÁCIÓ ÉSZLELVE"
+    },
+    interp:{
+      safe:"Alacsony pontszám: Nem észlelhetők jelentős manipulációs nyomok.",
+      mixed:"Vegyes jelek: Néhány manipulációs jellemző észlelhető.",
+      danger:"Magas pontszám: FIGYELMEZTETÉS! Több erős jel észlelve."
+    },
+    advice:"Mindig: ellenőrizze az elsődleges forrásokat, keressen független megerősítéseket.",
+    badges:{none:"nincs", veryStrong:"nagyon erős"}
   }
 };
 
@@ -442,7 +869,14 @@ const els={
   calcBtn:document.getElementById('abCalcBtn'), 
   resetBtn:document.getElementById('resetBtn'), 
   abResetBtn:document.getElementById('abResetBtn'), 
-  root:document.getElementById('exportRoot')
+  root:document.getElementById('exportRoot'),
+  title:document.getElementById('appTitle'),
+  intro:document.getElementById('intro'),
+  langLabel:document.getElementById('langLabel'),
+  methodSummary:document.getElementById('methodSummary'),
+  methodText:document.getElementById('methodText'),
+  signalsTitle:document.getElementById('signalsTitle'),
+  resultTitle:document.getElementById('resultTitle')
 };
 
 const takeover={
@@ -464,22 +898,39 @@ let state={lang:'bg', values:Array(20).fill(0), cia:true, lastScore:0};
 function render(){ 
   const t=I18N[state.lang]||I18N.bg; 
   document.documentElement.lang=state.lang; 
+  
+  // Update all text elements
+  els.title.textContent = t.title;
+  els.intro.innerHTML = t.intro;
+  els.langLabel.textContent = t.langLabel;
+  els.methodSummary.textContent = t.methodology;
+  els.methodText.textContent = t.methodText;
+  els.signalsTitle.textContent = t.signalsTitle;
+  els.resultTitle.textContent = t.resultTitle;
+  
+  // Update selects
   els.lang.value=state.lang; 
   els.abLang.value=state.lang; 
+  
+  // Update buttons
   els.resultsBtn.textContent=t.results; 
-  els.abResultsBtn.textContent=t.results; 
+  els.abResultsBtn.textContent=t.results;
+  els.resetBtn.textContent=t.reset;
+  els.abResetBtn.textContent=t.reset;
+  els.calcBtn.textContent=t.calc;
   takeover.save.textContent=t.save;
   takeover.pdf.textContent=t.savePDF;
   takeover.close.textContent=t.ok;
   
-  const qs = state.lang==='bg'? QUESTIONS_BG:QUESTIONS_EN; 
+  // Render questions
+  const qs = QUESTIONS[state.lang] || QUESTIONS.bg; 
   els.qWrap.innerHTML=''; 
   const frag=document.createDocumentFragment(); 
   qs.forEach((q,i)=>{ 
     const v=state.values[i]??0; 
     const d=document.createElement('div'); 
     d.className='q'; 
-    d.innerHTML=`<h3>${i+1}. ${q}</h3><div class="scale"><span class="badge">0: няма</span><input type="range" min="0" max="5" step="1" value="${v}" data-idx="${i}" aria-label="${q}"><span class="badge">5: много силен</span><span class="badge value mono" id="val-${i}">${v}</span></div>`; 
+    d.innerHTML=`<h3>${i+1}. ${q}</h3><div class="scale"><span class="badge">0: ${t.badges.none}</span><input type="range" min="0" max="5" step="1" value="${v}" data-idx="${i}" aria-label="${q}"><span class="badge">5: ${t.badges.veryStrong}</span><span class="badge value mono" id="val-${i}">${v}</span></div>`; 
     frag.appendChild(d); 
   }); 
   els.qWrap.appendChild(frag); 
@@ -585,13 +1036,13 @@ function hideResults(){
   document.body.style.overflow=''; 
 }
 
-/* ==== PNG export (using html2canvas-like approach) ==== */
+/* ==== PNG export ==== */
 async function exportPNG(){ 
-  els.badge.textContent = state.lang==='bg'? 'Създаване на PNG…' : 'Saving PNG…'; 
+  els.badge.textContent = I18N[state.lang].save + '...'; 
   els.badge.classList.remove('hidden');
   
   try{
-    // Use the modal panel instead of the full page
+    // Use the modal panel
     const panel = takeover.panel;
     const rect = panel.getBoundingClientRect();
     const w = Math.ceil(rect.width);
@@ -693,13 +1144,13 @@ async function exportPNG(){
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      els.badge.textContent = state.lang==='bg'? 'PNG записан!' : 'PNG saved!'; 
+      els.badge.textContent = 'PNG ✓'; 
       setTimeout(()=>els.badge.classList.add('hidden'), 1500);
     }, 'image/png');
     
   }catch(err){ 
     console.error('PNG export error:', err); 
-    els.badge.textContent = state.lang==='bg'? 'Грешка при PNG' : 'PNG error'; 
+    els.badge.textContent = 'PNG Error'; 
     setTimeout(()=>els.badge.classList.add('hidden'), 2000); 
   }
 }
@@ -789,8 +1240,8 @@ function exportPDF(){
         <div class="interp">${interpText}</div>
         <div class="interp">${t.advice}</div>
         <div class="footer">
-          <div>Дата: ${new Date().toLocaleString()}</div>
-          <div>Ниво: ${level.toUpperCase()}</div>
+          <div>${new Date().toLocaleString()}</div>
+          <div>${level.toUpperCase()}</div>
         </div>
       </div>
     </body>
